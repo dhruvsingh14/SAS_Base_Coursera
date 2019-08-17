@@ -1,10 +1,10 @@
-%let path = C:\Users\dhnsingh\Documents\ecrb94_ue\ECRB94;
+%let path = C:/Users/dhnsingh/Documents/ecrb94_ue/ECRB94;
 
-libname tsa "&path\programs\wk3_tsa_claims_project";
+libname tsa "&path/programs/wk3_tsa_claims_project";
 options validvarname=v7;
 
 /* reading in csv values */
-proc import datafile = "&path\data\TSAClaims2002_2017.csv" 
+proc import datafile = "&path/data/TSAClaims2002_2017.csv" 
 		dbms = csv
 		out = claims_raw		 
 		replace;
@@ -93,11 +93,15 @@ proc freq data = tsa.claims_cleaned order = freq;
 run;	
 
 *******************************;
-* 		  Report		 	   ;
+*          Report              ;
 *******************************;
 %let statename=Hawaii;
+%let outpath=C:\Users\dhnsingh\Documents\ecrb94_ue\ECRB94\Reports;
+ods pdf file =  "&outpath/ClaimsReport.pdf" style=meadow pdftoc = 1;
+ods noproctitle;
 
 /* number of date issues overall */
+ods proclabel "Overall Date Issues";
 title "Overall Date Issues in the Data";
 proc freq data = tsa.claims_cleaned;
 	table date_issues / missing nocum nopercent;
@@ -106,6 +110,7 @@ title;
 
 /* claims per year of incident date */
 ods graphics on;
+ods proclabel "Overall Claims By Year";
 title "Overall Claims By Year";
 proc freq data = tsa.claims_cleaned;
 	table incident_date / nocum nopercent plots = freqplot;
@@ -115,7 +120,7 @@ run;
 title;
 
 /* relevant statistics by region using macros */
-
+title "&statename Claims Overview";
 title "&statename Claim Types, Claim Sites, and Disposition";
 proc freq data = TSA.claims_cleaned order = freq;
 	table claim_type claim_site disposition / nocum nopercent;
@@ -124,6 +129,7 @@ run;
 title;
 
 /* mean, min, max rounded for close amounts */
+title "&statename Close Amount Statistics";
 title "Close Amount Statistics for &statename";
 proc means data = tsa.claims_cleaned mean min max sum maxdec=0;
 	var close_amount;
@@ -131,23 +137,4 @@ proc means data = tsa.claims_cleaned mean min max sum maxdec=0;
 run;
 title;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ods pdf close;
