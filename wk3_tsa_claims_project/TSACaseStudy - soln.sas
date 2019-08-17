@@ -57,30 +57,29 @@ data tsa.claims_cleaned;
 	else if claim_type = "Passenger Property Loss/Personal Injur" then claim_type = "Passenger Property Loss";
 	else if claim_type = "Passenger Property Loss/Personal Injury" then claim_type = "Passenger Property Loss";
 	else if claim_type = "Property Damage/Personal Injury" then claim_type = "Property Damage";
-	
-	
-	if Claim_Type = "-" or Claim_Type = "" then Claim_Type = "Unknown";
-	
-	if Disposition = "-" or Disposition = "" then Disposition = "Unknown";
-run;
-
-/* unique values for claim_type,  claim_site, disposition*/
-proc sql;
-	select distinct(claim_type) as uClaim_Type from claims_complete; 
-	select distinct(claim_site) as uClaim_Site from claims_complete; 
-	select distinct(disposition) as uDisposition from claims_complete;
-run;
-
-/* splitting claim type column by slash, replacing spaces and truncations to standardize */
-data claims_unique;
-	set claims_complete;
-	claim_type = scan(claim_type, 1, '/');
-	disposition = tranwrd(disposition, "losed: Contractor ", "Closed:Contractor ");
-	disposition = tranwrd(disposition, ": ", ":");
-run;
-
-proc sql;
-	select distinct(claim_type) as uClaim_Type from claims_unique; 
-	select distinct(claim_site) as uClaim_Site from claims_unique; 
-	select distinct(disposition) as uDisposition from claims_unique;
+/* case change */
+	State = upcase(State);
+	Statename = propcase(Statename);
+/* date issues */
+	if (Incident_date > Date_received or
+		date_received = . or
+		incident_date = . or 
+		year(incident_date) < 2002 or
+		year(incident_date) > 2017 or
+		year(date_received) < 2002 or
+		year(date_received) > 2017) then Date_Issues = "Needs Review";
+/* labels and formats */
+	format incident_date date_received date9. close_amount dollar20.2;
+	label Airport_Code = "Airport Code"
+		Airport_Name = "Airport Name"
+		Claim_Number = "Claim Number"
+		Claim_Site = "Claim Site"
+		Claim_Type = "Claim Type"
+		Close_Amount = "Close Amount"
+		Date_Issues = "Date Issues"
+		Date_Received = "Date Received"
+		Incident_Date = "Incident Date"
+		Item_Category = "Item Category";
+/* dropping vars */
+		drop county city;
 run;
