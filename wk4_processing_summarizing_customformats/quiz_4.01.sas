@@ -32,3 +32,31 @@ run;
 *******************************;
 * 	  Practice Quiz 4.03	   ;
 *******************************;
+
+proc sort data = cr.employee_current out = employee_current;
+	by department;
+run;
+
+/* creating a summary table with cumulating salary column by department */
+data salary;
+	set employee_current;
+	by department;
+	if first.department = 1 then TotalSalary = 0;
+	TotalSalary + Salary;
+	if last.department = 1;
+run;
+
+/* salary forecast table */
+data salaryforecast;
+	set salary;
+	format TotalSalary dollar12.;
+	Year = 1;
+	TotalSalary = TotalSalary*1.03;
+	output;
+	Year = 2;
+	TotalSalary = TotalSalary*1.03;
+	output;
+	Year = 3;
+	TotalSalary = TotalSalary*1.03;
+	output;
+run;
