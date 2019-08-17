@@ -83,3 +83,71 @@ data tsa.claims_cleaned;
 /* dropping vars */
 		drop county city;
 run;
+
+/* checking final data set for consistencies */
+proc freq data = tsa.claims_cleaned order = freq;
+	tables claim_site
+			disposition
+			claim_type
+			date_issues / nopercent nocum;
+run;	
+
+*******************************;
+* 		  Report		 	   ;
+*******************************;
+%let statename=Hawaii;
+
+/* number of date issues overall */
+title "Overall Date Issues in the Data";
+proc freq data = tsa.claims_cleaned;
+	table date_issues / missing nocum nopercent;
+run;
+title;
+
+/* claims per year of incident date */
+ods graphics on;
+title "Overall Claims By Year";
+proc freq data = tsa.claims_cleaned;
+	table incident_date / nocum nopercent plots = freqplot;
+	format incident_date year4.;
+	where date_issues is null;
+run;
+title;
+
+/* relevant statistics by region using macros */
+
+title "&statename Claim Types, Claim Sites, and Disposition";
+proc freq data = TSA.claims_cleaned order = freq;
+	table claim_type claim_site disposition / nocum nopercent;
+	where statename = "&statename" and date_issues is null;
+run;
+title;
+
+/* mean, min, max rounded for close amounts */
+title "Close Amount Statistics for &statename";
+proc means data = tsa.claims_cleaned mean min max sum maxdec=0;
+	var close_amount;
+	where statename= "&statename" and date_issues is null;
+run;
+title;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
