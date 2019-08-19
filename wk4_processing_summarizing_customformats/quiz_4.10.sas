@@ -52,21 +52,22 @@ proc means data = demographics min max mean sum;
 run;
 
 *******************************;
-* 	  Practice Quiz 4.11	   ;
+* 	  Practice Quiz 4.12	   ;
 *******************************;
 
 * debugging exercise ;
 
 proc format;
-	value statfmt S="Single"
-	              M="Married"
-	              O="Other";
-	value salrange low<50000="Under $50K"
+	value $statfmt 'S'="Single"
+	              'M'="Married"
+	              'O'="Other";
+	value salrange low-<50000="Under $50K"
 	               50000-100000="50K-100K"
-	               100000<high="Over 100K";
+	               100000<-high="Over 100K";
 run;
 
 proc freq data=cr.employee;
 	tables Status;
 	tables City*Salary / nopercent nocol;
+	format Status $statfmt. Salary salrange.;
 run;
