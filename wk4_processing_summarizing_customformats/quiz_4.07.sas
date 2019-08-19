@@ -33,8 +33,20 @@ proc sort data = outfield;
 	by descending BatAvg;
 run;
 
-
 *******************************;
 * 	  Practice Quiz 4.09	   ;
 *******************************;
+
+proc contents data= emp_new;
+run;
+
+data emp_new;
+	set cr.employee_new (rename = (HireDate = HireDateChar));
+	EmpID=substr(EmpID, 4);
+	HireDate=input(HireDateChar, anydtdte10.);
+	Salary=input(AnnualSalary, dollar12.);
+	drop HireDateChar;
+	format HireDate date9. Salary dollar12.;
+run;	
+	
 
