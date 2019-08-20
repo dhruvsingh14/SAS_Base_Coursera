@@ -36,6 +36,8 @@ run;
 * 	  Practice Quiz 5.03	   ;
 *******************************;
 
+* debugging exercise ;
+
 proc sort data=cr.employee(keep=EmpID Name Department) out=emp_sort;
 	by EmpID;
 run;
@@ -44,11 +46,19 @@ proc sort data=cr.employee_donations out=donate_sort;
 	by EmpID;
 run;
 
-data donation;
+data donation nodonation;
 	merge emp_sort(in=in_emp) donate_sort(in=in_don);
 	by EmpID;
-	if in_don=1 and in_emp=1 then TotalDonation=sum(of Qtr1-Qtr4);
+	if in_don=1 and in_emp=1 then do;
+		TotalDonation=sum(of Qtr1-Qtr4);
 		output donation;
+	end;
+	if in_don= 0 and in_emp=1 then output nodonation;
+run;
+
+
+proc sort data = donation out = don_sort;
+	by name;
 run;
 	
 
