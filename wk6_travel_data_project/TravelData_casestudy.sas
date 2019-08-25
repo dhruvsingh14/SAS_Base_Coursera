@@ -9,11 +9,20 @@ run;
 * creating cleaned columns;
 data tourism;
 	set tourism;
+	retain Country_Name Tourism_Type Category;
 	if A ne . then Country_Name = Country;
 	if Country = "Inbound tourism" then Tourism_Type = "Inbound tourism";
 	else if Country = "Outbound tourism" then Tourism_Type = "Outbound tourism";  
 	if A = . and country ne "Inbound tourism" and country ne "Outbound tourism" then Category = Country;
 run;
+
+DATA tourismFilled (DROP = filledX) ;
+	SET tourism ;
+	RETAIN filledX ; /* keeps the last non-missing value in memory */
+	IF NOT MISSING(Country_Name) THEN filledX = Country_Name ; /* fills the new variable with non-missing value */
+	Country_Name = filledX ;
+RUN ;
+
 
 
 
