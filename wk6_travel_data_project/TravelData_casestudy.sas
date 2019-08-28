@@ -12,7 +12,7 @@ run;
 * creating cleaned columns: country, type, category;
 data tourism;
 	retain Country_name Tourism_type Category Series YR2014;
-	length Tourism_type $20.;
+	length Tourism_type $20. Category $50.;
 	set tourism;
 /* creating tourism type column */
 	Tourism_type = "";
@@ -31,12 +31,15 @@ data tourism;
 	series = upcase(series);
 	if series = ".." then series = "";
 /* creating yr2014 column */
-	if find(Country, 'Thousands') ge 1 then YR2014 = 1000*_2014;
-	*YR2014 = input(_2014, 6.);
-	*else YR2014 = input(_2014, $6.)*1000000;
-	*format YR2014 comma20.;
+	YR2014 = 0;
+	if findw(country,'Thousands')>0 then YR2014 = _2014*1000;
+	if findw(country,'Mn')>0 then YR2014 = _2014*1000000;
+	format YR2014 comma20.;
+	keep Country_Name Tourism_Type Category Series Y2014;
 run;
 
+proc contents data = tourism;
+run;
 
  
 
