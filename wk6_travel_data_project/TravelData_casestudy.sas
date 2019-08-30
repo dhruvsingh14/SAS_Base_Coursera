@@ -87,65 +87,7 @@ data final_tourism nocountryfound;
 	format continent continent.;
 run;
 
-
-
-
-
-
-
-
-
-
-data country_info;
-	set cr.country_info;
+/* subetting unmerged countries to unique values */
+proc sort data = nocountryfound noduprecs;
+	by country_name;
 run;
-
-* runnining proc contents;
-proc contents data = tourism;
-run;
-
-proc contents data = country_info;
-run;
-
-
-* sorting data sets;
-proc sort data = tourism;
-	by country;
-run;
-
-proc sort data = country_info;
-	by country;
-run;
-
-* merging first;
-data country_tourism;
-	merge tourism country_info;
-	by country;
-run;
-
-
-
-
-
-
-
-
-
-
-
-
-
-* transposing in steps;
-
-* step 1: furling out country column, narrow to wide;
-proc sort data = tourism;
-	by A;
-run;
-
-* wide to long ;
-proc transpose data = tourism out = tourism_w;
-	var country _1995 -- _2014;
-	by A ;
-run;
-	
-
