@@ -91,3 +91,13 @@ run;
 proc sort data = nocountryfound noduprecs;
 	by country_name;
 run;
+
+/* final portion: outputting means table */
+proc means data = final_tourism mean min max maxdec=0;
+	class continent;
+	where category="Arrivals";
+run;	
+
+proc means data = final_tourism mean min max maxdec=0;
+	where category="Tourism expenditure in other countries - US$";
+run;	
